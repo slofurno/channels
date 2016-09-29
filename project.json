@@ -1,8 +1,9 @@
-{
+﻿{
   "version": "1.0.0-*",
   "buildOptions": {
     "debugType": "portable",
-    "emitEntryPoint": true
+    "emitEntryPoint": true,
+    "allowUnsafe": true
   },
   "dependencies": {
     "System.Threading.Tasks.Channels": "0.1.0-*"

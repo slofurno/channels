@@ -13,14 +13,18 @@ char* mqueue_read(char *queue_name) {
     struct mq_attr attr = {0};
     mqd_t queue = mq_open(queue_name, O_RDONLY);
 
+    if (queue < 0) {
+        printf("error: %s\n", strerror(errno));
+    }
+
     mq_getattr(queue, &attr);
     char *msg = calloc(1, attr.mq_msgsize);
 
     ssize_t n;
     if ((n = mq_receive(queue, msg, attr.mq_msgsize, NULL)) == -1) {
-        //printf("error: %s\n", strerror(errno));
+        printf("error: %s\n", strerror(errno));
     } else {
-        //printf("%s\n", msg);
+        printf("mqueue_read returning: %s\n", msg);
     }
 
     mq_close(queue);
@@ -29,10 +33,21 @@ char* mqueue_read(char *queue_name) {
 
 int mqueue_write(char *queue_name, char *msg) {
     size_t n = strlen(msg);
-    mqd_t queue = mq_open(queue_name, O_RDWR | O_CREAT, 0664, NULL);
+    mqd_t queue = mq_open(queue_name, O_RDWR | O_CREAT | O_NONBLOCK, 0664, NULL);
     mq_send(queue, msg, n, 0);
     mq_close(queue);
     return 0;
+}
+
+int open_file(char *name) {
+    printf("try to open: %s\n", name);
+    int fd = open(name, O_RDONLY|O_NONBLOCK);
+    if (fd < 0) {
+        printf("%s\n", strerror(errno));
+    } else {
+        printf("opened with fd: %d\n", fd);
+    }
+    return fd;
 }
 
 
