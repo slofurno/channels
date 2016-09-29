@@ -4,14 +4,20 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Channels;
 using System.Runtime.InteropServices;
 
+
+[StructLayout(LayoutKind.Sequential)]
+public struct padding_32 {
+  public long p1, p2, p3, p4;
+}
+
 [StructLayout(LayoutKind.Sequential)]
 public struct mq_attr {
   public long mq_flags;
   public long mq_maxmsg;      /* Max. # of messages on queue */
   public long mq_msgsize;     /* Max. message size (bytes) */
   public long mq_curmsgs;     /* # of messages currently in queue */
+  public padding_32 padding;
 }
-
 
 [StructLayout(LayoutKind.Sequential)]
 public struct epoll_event {
@@ -78,7 +84,7 @@ class Program
         //attr.mq_flags = O_NONBLOCK;
 
         int mqfd = mq_open("/asdf", O_RDWR|O_NONBLOCK);
-        long a,b,c,d;
+        //long a,b,c,d;
         //int a,b,c,d,e,xf,g,h,z,o,j,k,l,m = mqfd;
         Console.WriteLine("original mqfd: {0}",mqfd);
         //int mqfd = mq_open("/asdf", O_RDWR|O_NONBLOCK, S_IRUSR|S_IWUSR, ref attr);
