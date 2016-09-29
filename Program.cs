@@ -29,14 +29,6 @@ public struct epoll_data {
 
 class Program
 {
-    [DllImport("libhello.so")]
-    static extern int addInts(int a, int b);
-
-    [DllImport("libmq.so")]
-    static extern string mqueue_read(string name);
-
-    [DllImport("libmq.so")]
-    static extern int open_file(string name);
 
     [DllImport("librt.so")]
     static extern int mq_open(string name, int oflag);
@@ -83,14 +75,15 @@ class Program
 
     static void Main(string[] args)
     {
-        Console.WriteLine("Hello World!");
-        Console.WriteLine("{0} + {1} = {2}", 4, 5, addInts(4,5));
-
-        mq_attr attr = new mq_attr();
-        attr.mq_flags = O_NONBLOCK;
+        //attr.mq_flags = O_NONBLOCK;
 
         int mqfd = mq_open("/asdf", O_RDWR|O_NONBLOCK);
+        long a,b,c,d;
+        //int a,b,c,d,e,xf,g,h,z,o,j,k,l,m = mqfd;
+        Console.WriteLine("original mqfd: {0}",mqfd);
         //int mqfd = mq_open("/asdf", O_RDWR|O_NONBLOCK, S_IRUSR|S_IWUSR, ref attr);
+        //
+        mq_attr attr = new mq_attr();
         mq_getattr(mqfd, ref attr);
         Console.WriteLine("maxmsg: {0}\nmsgsize: {1}\nflags: {2}", attr.mq_maxmsg, attr.mq_msgsize, attr.mq_flags);
 
@@ -98,6 +91,9 @@ class Program
         var ev = new epoll_event();
         ev.events = EPOLLIN | EPOLLET;
         ev.data.fd = mqfd;
+
+        Console.WriteLine("original mqfd: {0}",mqfd);
+       // Console.WriteLine("??" + (m+20));
 
         if (epoll_ctl(epfd, EPOLL_CTL_ADD, mqfd, ref ev) < 0) {
           Console.WriteLine("epoll_ctl error");
@@ -120,34 +116,7 @@ class Program
         int n = epoll_wait(epfd, ref events, 10, -1);
 
         Console.WriteLine($"got {n} events");
-        /*
-        run().Wait();
-        string read = mqueue_read("/asdf");
-        Console.WriteLine($"{read}");
-        */
     }
 
-    static async Task read(IChannel<string> messages) {
-      for(;;) {
-        //await Task.Delay(2000);
-        //await messages.WriteAsync("DFGDFGDF");
-        string read = mqueue_read("/asdf");
-        await messages.WriteAsync(read).ConfigureAwait(false);
-        //await Task.Yield();
-      }
-    }
-
-    static async Task run() {
-      var messages = Channel.Create<string>();
-      Console.WriteLine("111");
-      Task.Run(() => read(messages));
-
-      for(;;){
-        Console.WriteLine("lets get a msg,,");
-        var msg = await messages.ReadAsync().ConfigureAwait(false);
-        Console.WriteLine($"{msg}");
-      }
-
-    }
 }
 
