@@ -6,7 +6,11 @@
     "allowUnsafe": true
   },
   "dependencies": {
-    "System.Threading.Tasks.Channels": "0.1.0-*"
+    "System.Threading.Tasks.Channels": "0.1.0-*",
+    "Channels": "0.2.0-beta-*",
+    "Channels.Networking.Libuv": "0.2.0-beta-*",
+    "Channels.Networking.Sockets": "0.2.0-beta-*",
+    "Channels.Text.Primitives": "0.2.0-beta-*"
   },
   "frameworks": {
     "netcoreapp1.0": {
